@@ -6,11 +6,13 @@ const { getLatestAssessmentByUserId } = require('../models/Assessment');
 const JWT_EXPIRY = '7d';
 
 function generateToken(user) {
+  const role = user.email === 'lubaizulbi@gmail.com' ? 'admin' : 'user';
   return jwt.sign(
     {
       id: user.id,
       email: user.email,
-      name: user.name
+      name: user.name,
+      role
     },
     process.env.JWT_SECRET,
     { expiresIn: JWT_EXPIRY }
@@ -59,6 +61,7 @@ exports.register = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.email === 'lubaizulbi@gmail.com' ? 'admin' : 'user',
         assessmentCompleted: !!user.assessment_completed
       },
       latestAssessment: null
@@ -100,6 +103,7 @@ exports.login = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.email === 'lubaizulbi@gmail.com' ? 'admin' : 'user',
         assessmentCompleted
       },
       latestAssessment: assessmentCompleted ? latestAssessment : null

@@ -13,6 +13,7 @@ const morgan = require('morgan');
 
 const authRoutes = require('./routes/authRoutes');
 const assessmentRoutes = require('./routes/assessmentRoutes');
+const initAdmin = require('./config/initAdmin');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -76,9 +77,15 @@ app.use((err, req, res, next) => {
 
 // Start server (skip when deployed to Vercel - it uses the exported app)
 if (!process.env.VERCEL) {
-  app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+  // Initialize admin user
+  initAdmin().then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server listening on port ${PORT}`);
+    });
   });
+} else {
+  // Run it anyway on cold start for Vercel
+  initAdmin();
 }
 
 // Export for Vercel serverless
